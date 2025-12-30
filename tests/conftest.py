@@ -1,8 +1,8 @@
 """Pytest configuration and shared fixtures."""
 
 import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
 
@@ -45,17 +45,15 @@ def sample_secret_candidate() -> SecretCandidate:
     """Create a sample SecretCandidate for testing."""
     return SecretCandidate(
         provider="openai",
-        key_type="api_key",
-        secret="sk-proj-test123456789abcdefghijklmnopqrstuvwxyz0123456789",
-        file_path=Path("/test/sample.py"),
+        secret_value="sk-proj-test123456789abcdefghijklmnopqrstuvwxyz0123456789",
+        file_path="/test/sample.py",
         line_number=5,
         column_start=14,
         column_end=67,
-        line_content='OPENAI_KEY = "sk-proj-test123456789abcdef..."',
-        context_before=["", "# API Configuration", ""],
-        context_after=["", "# End of config", ""],
-        entropy=5.2,
-        status=ValidationStatus.PENDING,
+        context_before="# API Configuration",
+        context_after="# End of config",
+        entropy_score=5.2,
+        validation_status=ValidationStatus.PENDING,
     )
 
 

@@ -4,12 +4,16 @@ This module defines the Pydantic models used throughout the application
 for representing secrets, scan results, and validation states.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
+
+
+def _utcnow() -> datetime:
+    """Get current UTC time as timezone-aware datetime."""
+    return datetime.now(UTC)
 
 
 class ValidationStatus(str, Enum):
@@ -31,31 +35,43 @@ class SecretCandidate(BaseModel):
     context, and validation status.
     """
 
-    id: UUID = Field(default_factory=uuid4, description="Unique identifier for this finding")
-    provider: str = Field(..., description="Provider name (e.g., 'openai', 'anthropic')")
+    id: UUID = Field(
+        default_factory=uuid4, description="Unique identifier for this finding"
+    )
+    provider: str = Field(
+        ..., description="Provider name (e.g., 'openai', 'anthropic')"
+    )
     secret_value: str = Field(..., description="The actual secret value")
     file_path: str = Field(..., description="Path to the file containing the secret")
-    line_number: int = Field(..., ge=1, description="Line number where secret was found")
+    line_number: int = Field(
+        ..., ge=1, description="Line number where secret was found"
+    )
     column_start: int = Field(default=0, ge=0, description="Starting column position")
     column_end: int = Field(default=0, ge=0, description="Ending column position")
     context_before: str = Field(default="", description="Lines before the secret")
     context_after: str = Field(default="", description="Lines after the secret")
-    variable_name: Optional[str] = Field(default=None, description="Variable name if detected")
-    pattern_name: str = Field(default="", description="Name of the pattern that matched")
-    entropy_score: float = Field(default=0.0, ge=0.0, description="Shannon entropy of the secret")
+    variable_name: str | None = Field(
+        default=None, description="Variable name if detected"
+    )
+    pattern_name: str = Field(
+        default="", description="Name of the pattern that matched"
+    )
+    entropy_score: float = Field(
+        default=0.0, ge=0.0, description="Shannon entropy of the secret"
+    )
     validation_status: ValidationStatus = Field(
         default=ValidationStatus.PENDING,
         description="Current validation status",
     )
-    validation_timestamp: Optional[datetime] = Field(
+    validation_timestamp: datetime | None = Field(
         default=None,
         description="When validation was performed",
     )
-    validation_message: Optional[str] = Field(
+    validation_message: str | None = Field(
         default=None,
         description="Message from validation attempt",
     )
-    validation_metadata: Optional[dict[str, str]] = Field(
+    validation_metadata: dict[str, str] | None = Field(
         default=None,
         description="Additional metadata from validation",
     )
@@ -69,13 +85,17 @@ class ScanResult(BaseModel):
     """
 
     repo_url: str = Field(..., description="URL of the scanned repository")
-    repo_path: Optional[str] = Field(default=None, description="Local path where repo was cloned")
-    commit_hash: Optional[str] = Field(default=None, description="HEAD commit hash at scan time")
+    repo_path: str | None = Field(
+        default=None, description="Local path where repo was cloned"
+    )
+    commit_hash: str | None = Field(
+        default=None, description="HEAD commit hash at scan time"
+    )
     scan_started_at: datetime = Field(
-        default_factory=datetime.utcnow,
+        default_factory=_utcnow,
         description="When the scan started",
     )
-    scan_completed_at: Optional[datetime] = Field(
+    scan_completed_at: datetime | None = Field(
         default=None,
         description="When the scan completed",
     )
@@ -84,7 +104,9 @@ class ScanResult(BaseModel):
         default_factory=list,
         description="List of secrets found",
     )
-    errors: list[str] = Field(default_factory=list, description="Errors encountered during scan")
+    errors: list[str] = Field(
+        default_factory=list, description="Errors encountered during scan"
+    )
 
     @property
     def duration_seconds(self) -> float:
@@ -105,18 +127,24 @@ class ScanSession(BaseModel):
     May include multiple repositories when scanning from a file.
     """
 
-    session_id: UUID = Field(default_factory=uuid4, description="Unique session identifier")
+    session_id: UUID = Field(
+        default_factory=uuid4, description="Unique session identifier"
+    )
     started_at: datetime = Field(
-        default_factory=datetime.utcnow,
+        default_factory=_utcnow,
         description="When the session started",
     )
-    completed_at: Optional[datetime] = Field(
+    completed_at: datetime | None = Field(
         default=None,
         description="When the session completed",
     )
     targets: list[str] = Field(default_factory=list, description="List of scan targets")
-    results: list[ScanResult] = Field(default_factory=list, description="Results for each target")
-    validate_keys: bool = Field(default=False, description="Whether key validation was enabled")
+    results: list[ScanResult] = Field(
+        default_factory=list, description="Results for each target"
+    )
+    validate_keys: bool = Field(
+        default=False, description="Whether key validation was enabled"
+    )
 
     @property
     def total_secrets_found(self) -> int:

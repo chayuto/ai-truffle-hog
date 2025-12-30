@@ -131,6 +131,8 @@ ignore = [
     "E501",   # line too long (handled by formatter)
     "PLR0913", # too many arguments
     "PLR2004", # magic value comparison
+    "PLW0603", # global statement (used for singleton patterns)
+    "PLC0415", # import not at top-level (lazy imports for performance)
 ]
 
 [tool.ruff.lint.isort]

@@ -4,7 +4,7 @@ This module provides functions for redacting sensitive values
 before they are written to logs or displayed to users.
 """
 
-from typing import Optional
+from collections.abc import Callable
 
 
 def redact_secret(
@@ -58,7 +58,7 @@ def redact_secret(
 def redact_in_text(
     text: str,
     secret: str,
-    replacement: Optional[str] = None,
+    replacement: str | None = None,
 ) -> str:
     """Replace occurrences of a secret in text with redacted version.
 
@@ -83,7 +83,7 @@ def redact_in_text(
     return text.replace(secret, replacement)
 
 
-def create_redaction_filter(secrets: list[str]) -> callable:
+def create_redaction_filter(secrets: list[str]) -> Callable[[str], str]:
     """Create a filter function that redacts multiple secrets.
 
     Args:

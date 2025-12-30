@@ -1,7 +1,5 @@
 """Unit tests for entropy calculation utilities."""
 
-import pytest
-
 from ai_truffle_hog.utils.entropy import (
     calculate_entropy,
     calculate_entropy_ratio,

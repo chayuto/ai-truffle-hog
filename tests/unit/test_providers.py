@@ -1,12 +1,12 @@
 """Unit tests for provider base and registry."""
 
 import re
-from pathlib import Path
-from typing import Optional
 
-import pytest
-
-from ai_truffle_hog.providers.base import BaseProvider, ValidationResult, ValidationStatus
+from ai_truffle_hog.providers.base import (
+    BaseProvider,
+    ValidationResult,
+    ValidationStatus,
+)
 from ai_truffle_hog.providers.registry import ProviderRegistry, get_registry
 
 
@@ -22,24 +22,36 @@ class MockProvider(BaseProvider):
         return "Mock Provider"
 
     @property
-    def patterns(self) -> dict[str, re.Pattern[str]]:
-        return {
-            "api_key": re.compile(r"mock-[a-z0-9]{16}"),
-        }
+    def patterns(self) -> list[re.Pattern[str]]:
+        return [re.compile(r"mock-[a-z0-9]{16}")]
 
-    async def validate_key(self, key: str, key_type: str) -> ValidationResult:
-        if key == "mock-validkey12345678":
+    @property
+    def validation_endpoint(self) -> str:
+        return "https://api.mock.com/v1/validate"
+
+    @property
+    def auth_header_name(self) -> str:
+        return "Authorization"
+
+    def build_auth_header(self, key: str) -> dict[str, str]:
+        return {"Authorization": f"Bearer {key}"}
+
+    def interpret_response(
+        self,
+        status_code: int,
+        response_body: dict[str, object] | None,
+    ) -> ValidationResult:
+        if status_code == 200:
             return ValidationResult(
                 status=ValidationStatus.VALID,
+                http_status_code=status_code,
                 message="Key is valid",
             )
         return ValidationResult(
             status=ValidationStatus.INVALID,
+            http_status_code=status_code,
             message="Key is invalid",
         )
-
-    def get_auth_header(self, key: str) -> dict[str, str]:
-        return {"Authorization": f"Bearer {key}"}
 
 
 class TestBaseProvider:
@@ -55,22 +67,29 @@ class TestBaseProvider:
         """Patterns are compiled regex."""
         provider = MockProvider()
         patterns = provider.patterns
-        assert "api_key" in patterns
-        assert hasattr(patterns["api_key"], "match")
+        assert len(patterns) == 1
+        assert hasattr(patterns[0], "match")
 
     def test_pattern_matching(self) -> None:
         """Pattern matches expected format."""
         provider = MockProvider()
-        pattern = provider.patterns["api_key"]
+        pattern = provider.patterns[0]
 
         assert pattern.search("mock-abcd1234efgh5678")
         assert not pattern.search("other-key-format")
 
-    def test_get_auth_header(self) -> None:
+    def test_build_auth_header(self) -> None:
         """Auth header is formatted correctly."""
         provider = MockProvider()
-        header = provider.get_auth_header("test-key")
+        header = provider.build_auth_header("test-key")
         assert header == {"Authorization": "Bearer test-key"}
+
+    def test_match_method(self) -> None:
+        """match() method returns matches."""
+        provider = MockProvider()
+        text = "Key: mock-abcd1234efgh5678 and mock-1234567890abcdef"
+        matches = provider.match(text)
+        assert len(matches) == 2
 
 
 class TestValidationResult:
@@ -89,8 +108,9 @@ class TestValidationResult:
         """ValidationResult with metadata."""
         result = ValidationResult(
             status=ValidationStatus.VALID,
+            http_status_code=200,
             message="Active key",
-            metadata={"org": "test-org", "rate_limit": 1000},
+            metadata={"org": "test-org", "rate_limit": "1000"},
         )
         assert result.metadata is not None
         assert result.metadata["org"] == "test-org"
@@ -106,7 +126,7 @@ class TestProviderRegistry:
 
         registry.register(provider)
 
-        assert "mock" in registry.list_providers()
+        assert "mock" in registry.names()
         assert registry.get("mock") is provider
 
     def test_get_unknown_provider(self) -> None:
@@ -119,16 +139,17 @@ class TestProviderRegistry:
         registry = ProviderRegistry()
         registry.register(MockProvider())
 
-        providers = registry.list_providers()
-        assert "mock" in providers
+        names = registry.names()
+        assert "mock" in names
 
-    def test_get_all_patterns(self) -> None:
-        """Get patterns from all providers."""
+    def test_all_providers(self) -> None:
+        """Get all providers."""
         registry = ProviderRegistry()
         registry.register(MockProvider())
 
-        patterns = registry.get_all_patterns()
-        assert ("mock", "api_key") in [(p, t) for p, t, _ in patterns]
+        providers = registry.all()
+        assert len(providers) == 1
+        assert providers[0].name == "mock"
 
 
 class TestGetRegistry:

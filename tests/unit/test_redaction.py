@@ -1,7 +1,5 @@
 """Unit tests for redaction utilities."""
 
-import pytest
-
 from ai_truffle_hog.utils.redaction import (
     create_redaction_filter,
     redact_in_text,

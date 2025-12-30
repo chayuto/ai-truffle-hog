@@ -4,8 +4,6 @@ This module provides a registry pattern for registering and retrieving
 provider implementations at runtime.
 """
 
-from typing import Optional
-
 from ai_truffle_hog.providers.base import BaseProvider
 
 
@@ -28,7 +26,7 @@ class ProviderRegistry:
         """
         self._providers[provider.name] = provider
 
-    def get(self, name: str) -> Optional[BaseProvider]:
+    def get(self, name: str) -> BaseProvider | None:
         """Get a provider by name.
 
         Args:
@@ -65,7 +63,7 @@ class ProviderRegistry:
 
 
 # Global registry instance
-_registry: Optional[ProviderRegistry] = None
+_registry: ProviderRegistry | None = None
 
 
 def get_registry() -> ProviderRegistry:
@@ -89,8 +87,5 @@ def _initialize_providers(registry: ProviderRegistry) -> None:
     Args:
         registry: Registry to populate with providers.
     """
-    # TODO: Import and register providers in Phase 3
-    # from ai_truffle_hog.providers.openai import OpenAIProvider
-    # from ai_truffle_hog.providers.anthropic import AnthropicProvider
-    # etc.
-    pass
+    # Providers will be registered here in Phase 3
+    _ = registry  # Placeholder to avoid unused argument warning

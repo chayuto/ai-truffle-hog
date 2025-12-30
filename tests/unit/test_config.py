@@ -1,9 +1,7 @@
 """Unit tests for configuration management."""
 
-from pathlib import Path
 import tempfile
-
-import pytest
+from pathlib import Path
 
 from ai_truffle_hog.utils.config import (
     LoggingSettings,
@@ -110,9 +108,7 @@ entropy_threshold = 4.0
 [validator]
 enabled = false
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".toml", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write(toml_content)
             f.flush()
             config = load_config(Path(f.name))

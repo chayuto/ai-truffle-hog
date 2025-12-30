@@ -8,8 +8,8 @@ from ai_truffle_hog.core.models import (
 )
 
 __all__ = [
-    "SecretCandidate",
     "ScanResult",
     "ScanSession",
+    "SecretCandidate",
     "ValidationStatus",
 ]

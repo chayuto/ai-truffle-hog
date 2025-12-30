@@ -3,4 +3,4 @@
 __version__ = "0.1.0"
 __author__ = "AI Truffle Hog Team"
 
-__all__ = ["__version__", "__author__"]
+__all__ = ["__author__", "__version__"]

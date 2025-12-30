@@ -5,7 +5,6 @@ Pydantic Settings with support for environment variables and TOML files.
 """
 
 from pathlib import Path
-from typing import Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -98,7 +97,7 @@ class LoggingSettings(BaseSettings):
         default="json",
         description="Log format: 'json' or 'console'",
     )
-    file: Optional[str] = Field(default=None, description="Log file path")
+    file: str | None = Field(default=None, description="Log file path")
     redact_secrets: bool = Field(
         default=True,
         description="Redact secrets in log output",
@@ -140,7 +139,7 @@ class Settings(BaseSettings):
     output: OutputSettings = Field(default_factory=OutputSettings)
 
 
-def load_config(config_path: Optional[Path] = None) -> Settings:
+def load_config(config_path: Path | None = None) -> Settings:
     """Load configuration from file and environment.
 
     Priority (highest to lowest):
@@ -159,14 +158,14 @@ def load_config(config_path: Optional[Path] = None) -> Settings:
     if config_path and config_path.exists():
         import tomllib
 
-        with open(config_path, "rb") as f:
+        with config_path.open("rb") as f:
             config_data = tomllib.load(f)
 
     return Settings(**config_data)  # type: ignore[arg-type]
 
 
 # Global settings instance
-_settings: Optional[Settings] = None
+_settings: Settings | None = None
 
 
 def get_settings() -> Settings:

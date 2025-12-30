@@ -8,7 +8,6 @@ import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 
 class ValidationStatus(str, Enum):
@@ -27,8 +26,8 @@ class ValidationResult:
     """Result of a validation attempt against a provider API."""
 
     status: ValidationStatus
-    http_status_code: Optional[int] = None
-    message: Optional[str] = None
+    http_status_code: int | None = None
+    message: str | None = None
     metadata: dict[str, str] = field(default_factory=dict)
 
 
@@ -107,7 +106,7 @@ class BaseProvider(ABC):
     def interpret_response(
         self,
         status_code: int,
-        response_body: Optional[dict[str, object]],
+        response_body: dict[str, object] | None,
     ) -> ValidationResult:
         """Interpret HTTP response to determine key validity.
 
