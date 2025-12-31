@@ -65,10 +65,10 @@ class TestAnthropicProviderPatterns:
         """Different API version numbers are detected."""
         key1_suffix = "c" * 85
         key2_suffix = "d" * 90
-        text = f'''
+        text = f"""
         key1 = "sk-ant-api01-{key1_suffix}"
         key2 = "sk-ant-api02-{key2_suffix}"
-        '''
+        """
         matches = provider.match(text)
         assert len(matches) == 2
 
@@ -115,9 +115,7 @@ class TestAnthropicProviderInterpretResponse:
     def test_400_with_credit_error(self, provider: AnthropicProvider) -> None:
         """400 with credit/balance error indicates quota exceeded."""
         body = {
-            "error": {
-                "message": "Your credit balance is too low to access the API."
-            }
+            "error": {"message": "Your credit balance is too low to access the API."}
         }
         result = provider.interpret_response(400, body)
         assert result.status == ValidationStatus.QUOTA_EXCEEDED
