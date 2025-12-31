@@ -4,7 +4,15 @@ This module provides a registry pattern for registering and retrieving
 provider implementations at runtime.
 """
 
+from ai_truffle_hog.providers.anthropic import AnthropicProvider
 from ai_truffle_hog.providers.base import BaseProvider
+from ai_truffle_hog.providers.cohere import CohereProvider
+from ai_truffle_hog.providers.google import GoogleGeminiProvider
+from ai_truffle_hog.providers.groq import GroqProvider
+from ai_truffle_hog.providers.huggingface import HuggingFaceProvider
+from ai_truffle_hog.providers.langsmith import LangSmithProvider
+from ai_truffle_hog.providers.openai import OpenAIProvider
+from ai_truffle_hog.providers.replicate import ReplicateProvider
 
 
 class ProviderRegistry:
@@ -87,5 +95,12 @@ def _initialize_providers(registry: ProviderRegistry) -> None:
     Args:
         registry: Registry to populate with providers.
     """
-    # Providers will be registered here in Phase 3
-    _ = registry  # Placeholder to avoid unused argument warning
+    # Register all AI provider implementations
+    registry.register(OpenAIProvider())
+    registry.register(AnthropicProvider())
+    registry.register(HuggingFaceProvider())
+    registry.register(CohereProvider())
+    registry.register(ReplicateProvider())
+    registry.register(GoogleGeminiProvider())
+    registry.register(GroqProvider())
+    registry.register(LangSmithProvider())
