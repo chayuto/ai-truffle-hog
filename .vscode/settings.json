@@ -35,5 +35,6 @@
         "**/node_modules": true,
         "**/.git": true,
         "**/__pycache__": true
-    }
+    },
+    "chat.agent.maxRequests": 500
 }
