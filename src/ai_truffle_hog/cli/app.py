@@ -166,7 +166,9 @@ def scan(
         raise typer.Exit(code=1)
 
 
-def _resolve_and_scan_targets(targets: list[str], orchestrator: ScanOrchestrator) -> list[ScanResult]:
+def _resolve_and_scan_targets(
+    targets: list[str], orchestrator: ScanOrchestrator
+) -> list[ScanResult]:
     """Resolve targets and perform scanning."""
     if len(targets) == 1:
         target = targets[0]
