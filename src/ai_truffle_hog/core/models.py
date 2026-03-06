@@ -5,7 +5,7 @@ for representing secrets, scan results, and validation states.
 """
 
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
@@ -16,7 +16,7 @@ def _utcnow() -> datetime:
     return datetime.now(UTC)
 
 
-class ValidationStatus(str, Enum):
+class ValidationStatus(StrEnum):
     """Status of key validation."""
 
     PENDING = "pending"

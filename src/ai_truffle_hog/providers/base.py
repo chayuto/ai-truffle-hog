@@ -7,10 +7,10 @@ must inherit from, along with validation result types.
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class ValidationStatus(str, Enum):
+class ValidationStatus(StrEnum):
     """Result status of a key validation attempt."""
 
     VALID = "valid"
