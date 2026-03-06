@@ -169,5 +169,7 @@ disallow_untyped_decorators = false
 module = [
     "git",
     "git.*",
+    "pydriller",
+    "pydriller.*",
 ]
 ignore_missing_imports = true

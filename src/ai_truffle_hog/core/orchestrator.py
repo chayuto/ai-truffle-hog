@@ -91,7 +91,7 @@ class ScanLog:
             return (self.scan_end - self.scan_start).total_seconds()
         return 0.0
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, object]:
         """Convert to dictionary for JSON serialization."""
         return {
             "files_scanned": self.files_scanned,
@@ -271,7 +271,7 @@ class ScanOrchestrator:
                     rel_path = PathClass(file_info.path).relative_to(directory)
                     result.scan_log.files_scanned.append(str(rel_path))
                 except ValueError:
-                    result.scan_log.files_scanned.append(file_info.path)
+                    result.scan_log.files_scanned.append(str(file_info.path))
 
                 matches = self._scanner.scan_file(PathClass(file_info.path))
                 all_matches.extend(matches)
