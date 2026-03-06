@@ -11,6 +11,7 @@ import typer
 from ai_truffle_hog import __version__
 from ai_truffle_hog.core.orchestrator import (
     OutputFormat,
+    ScanOrchestrator,
     ScanResult,
     create_orchestrator,
 )
@@ -165,7 +166,7 @@ def scan(
         raise typer.Exit(code=1)
 
 
-def _resolve_and_scan_targets(targets: list[str], orchestrator) -> list[ScanResult]:
+def _resolve_and_scan_targets(targets: list[str], orchestrator: ScanOrchestrator) -> list[ScanResult]:
     """Resolve targets and perform scanning."""
     if len(targets) == 1:
         target = targets[0]
@@ -190,7 +191,7 @@ def _resolve_and_scan_targets(targets: list[str], orchestrator) -> list[ScanResu
 
 def _process_scan_results(
     results: list[ScanResult],
-    orchestrator,
+    orchestrator: ScanOrchestrator,
     output_file: Path | None,
     log_file: Path | None,
 ) -> tuple[int, bool]:

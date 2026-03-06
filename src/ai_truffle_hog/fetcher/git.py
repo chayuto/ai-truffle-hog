@@ -195,7 +195,7 @@ class GitFetcher:
             self.repo_path = self._temp_dir / self.repo_name
 
         # Clone options
-        clone_kwargs: dict[str, object] = {}
+        clone_kwargs: dict[str, Any] = {}
         if self.shallow:
             clone_kwargs["depth"] = 1
 
